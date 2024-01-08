@@ -5,7 +5,11 @@
   "description": "Preventing Scams...",
   "permissions": [
     "storage",
-    "tabs" 
+    "tabs",
+    "webNavigation" 
+  ],
+  "host_permissions": [
+    "*://*/*"
   ],
   "action": {
     "default_popup": "popup.html",

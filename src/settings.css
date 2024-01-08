@@ -1,0 +1,74 @@
+body {
+    font-family: Arial, sans-serif;
+  }
+  
+  .sidenav {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    padding-top: 20px;
+  }
+  
+  .sidenav a {
+    padding: 8px 8px 8px 16px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #818181;
+    display: block;
+  }
+  
+  .sidenav a:hover {
+    color: #f1f1f1;
+  }
+  
+  .main {
+    margin-left: 220px;
+    padding: 16px;
+  }
+  
+  h3, h4 {
+    color: #333;
+  }
+  /* Add any additional styles here */
+#blocked-sites-tabs {
+    margin-bottom: 10px;
+  }
+  
+  #blocked-sites-tabs button {
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  #blocked-sites-list {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  #blocked-sites-list div {
+    margin-bottom: 5px;
+    cursor: pointer;
+  }
+  #blocked-sites-list div:hover {
+    background-color: #e0e0e0;
+  }
+  #blocked-sites-list div.selected {
+    background-color: #add8e6;
+  }
+  
+  #new-site-input {
+    margin-right: 10px;
+  }
+  
+  #add-site-button, #remove-site-button {
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
