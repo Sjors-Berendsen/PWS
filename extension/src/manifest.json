@@ -6,7 +6,8 @@
   "permissions": [
     "storage",
     "tabs",
-    "webNavigation" 
+    "webNavigation",
+    "activeTab" 
   ],
   "host_permissions": [
     "*://*/*"
@@ -47,5 +48,11 @@
       },
       "description": "Open Extension Settings"
     }
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
 }
