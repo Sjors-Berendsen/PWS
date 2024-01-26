@@ -3,26 +3,26 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
     const fullDomain = url.hostname;
     const mainDomain = getMainDomain(fullDomain);
   
-    const bypassKey = 'bypass';
+   
   
     // Check local blacklist
-    chrome.storage.local.get(['yourBlockedSites', bypassKey], function (result) {
-      const localBlacklist = result.yourBlockedSites || [];
-      const bypass = result[bypassKey] || false;
+    chrome.storage.local.get(['yourBlockedSites'], function (result) {
+      const enabled = chrome.storage.local.get(['enabled']);
+      if (enabled){
+        const localBlacklist = result.yourBlockedSites || [];
   
-      if (localBlacklist.includes(fullDomain) || localBlacklist.includes(mainDomain)) {
-        if (bypass===false) {
+      if (localBlacklist.includes(fullDomain) || localBlacklist.includes(mainDomain)/**add logic for our blacklist too */) {
+        
 
   
           // Redirect to warning page
           const warningUrl = chrome.runtime.getURL(`warning.html?url=${encodeURIComponent(details.url)}`);
           chrome.tabs.update(details.tabId, { url: warningUrl });
-        } else if (bypass==true) {
-          // Display a message or take appropriate action when trying to bypass multiple times
-                // Set bypass to false
-                chrome.storage.local.set({ [bypassKey]: false });
-        }
+       
       }
+
+      }
+      
     });
   });
   

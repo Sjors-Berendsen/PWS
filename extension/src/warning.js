@@ -16,17 +16,6 @@ document.addEventListener('DOMContentLoaded', function () {
       chrome.storage.local.set({ [bypassKey]: false });
     });
 
-    document.getElementById('load-original-button').addEventListener('click', function () {
-      if (!bypass) {
-        // Set bypass to true
-        chrome.storage.local.set({ [bypassKey]: true });
-
-        // Notify the background script to load the original URL
-        chrome.runtime.sendMessage({ loadOriginalUrl: originalUrl });
-      } else {
-        // Display a message or take appropriate action when trying to bypass multiple times
-        console.log('Bypass already used.');
-      }
-    });
+    
   });
 });
