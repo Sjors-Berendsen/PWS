@@ -107,8 +107,3 @@ document.addEventListener('DOMContentLoaded', function () {
       return selectedElement ? selectedElement.textContent : null;
     }
   });
-  chrome.runtime.onMessage.addListener(function (message) {
-    if (message.type === 'updateEnabled') {
-      updateCheckboxState(message.isEnabled);
-    }
-  });
