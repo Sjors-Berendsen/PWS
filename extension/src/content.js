@@ -1,11 +1,8 @@
 function addButton() {
   const addCustomButton = () => {
-    let buttonContainer = document.querySelector('.iH.bzn[gh="mtb"]');
+    const buttonContainer = document.querySelector('.G-tF');
     console.log(buttonContainer);
-    if(!buttonContainer){
-      setTimeout(()=>{console.log('settimeout')}, 1*1000)
-      let buttonContainer = document.querySelector('.iH.bzn[gh="mtb"]');
-    }
+
     // Check if the button container is found
     if (buttonContainer) {
       // Check if the button is already present
@@ -16,9 +13,12 @@ function addButton() {
         customButton.setAttribute('data-custom-button', 'added'); // Add a data attribute to mark the button
 
         // Add click event listener to the button
-        customButton.addEventListener('click', () => {
-          // Your button click logic here
-          alert('Button clicked!');
+        buttonContainer.addEventListener('click', (event) => {
+          // Check if the clicked element is the custom button
+          if (event.target === customButton) {
+            // Your button click logic here
+            console.log('Button clicked!');
+          }
         });
 
         // Append the button to the container
