@@ -13,7 +13,7 @@ function addButton() {
         customButton.setAttribute('data-custom-button', 'added'); // Add a data attribute to mark the button
 
         // Add click event listener to the button
-        buttonContainer.addEventListener('click', (event) => {
+        customButton.addEventListener('click', (event) => {
           // Check if the clicked element is the custom button
           if (event.target === customButton) {
             // Your button click logic here
