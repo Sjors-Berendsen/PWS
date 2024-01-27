@@ -55,5 +55,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 chrome.downloads.onDeterminingFilename.addListener(function (item, suggest) {
   if (item.filename.endsWith(".exe")) {
     // Store download information for .exe files
+    chrome.storage.local.set({ downloadInfo: item });
   }
 });
