@@ -54,10 +54,10 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 
 chrome.runtime.onInstalled.addListener(function(details) {
   console.log(details.reason)
-  //if (details.reason === "install") {
+  if (details.reason === "install") {
     // Open the thank you screen on installation
     chrome.tabs.create({url: chrome.runtime.getURL('thankyou.html')});
-  //}
+  }
 });
 
 chrome.downloads.onDeterminingFilename.addListener(function (item) {
