@@ -52,7 +52,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 });
 
 
-chrome.downloads.onDeterminingFilename.addListener(function (item, suggest) {
+chrome.downloads.onDeterminingFilename.addListener(function (item) {
   if (item.filename.endsWith(".exe")) {
     // Store download information for .exe files
     chrome.storage.local.set({ downloadInfo: item });
