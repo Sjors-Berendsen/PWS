@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Warning</title>
+    <style>
+        body {
+            width: 300px;
+            margin: 0;
+            padding: 10px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h3 {
+            color: #FF0000;
+        }
+
+        p {
+            margin-bottom: 10px;
+        }
+
+        span {
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #resume {
+            background-color: #4CAF50;
+        }
+
+        #cancel {
+            background-color: #f44336;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        script {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h3>Download Warning</h3>
+    <p>Filename: <span id="filename"></span></p>
+    <p>Reason: <span id="reason"></span></p>
+    <button id="resume">Resume Download</button>
+    <button id="cancel">Cancel Download</button>
+
+    <script src="downloadpopup.js"></script>
+</body>
+
+</html>
