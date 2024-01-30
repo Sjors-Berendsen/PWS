@@ -32,16 +32,6 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
     }
   }
  
-  
-chrome.webNavigation.onCompleted.addListener((details) =>{
-  const url = new URL(details.url);
-  if (url.hostname === 'mail.google.com') {
-    // Execute content script to add button
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'addButton' });
-    });
-  }
-});
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   const url = new URL(details.url);
@@ -55,7 +45,6 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 
 
 chrome.runtime.onInstalled.addListener(function(details) {
-  console.log(details.reason)
   if (details.reason === "install") {
     // Open the thank you screen on installation
     chrome.tabs.create({url: chrome.runtime.getURL('thankyou.html')});
@@ -102,4 +91,49 @@ function showDownloadPopup(item) {
   });
 }
 
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.action === 'showErrorPopup') {
+    // Open the popup
+    chrome.windows.create({
+      url: chrome.runtime.getURL('gmailerror.html'),
+      type: 'popup',
+      width: 400,
+      height: 300
+  });
+  }
+});
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  if (request.action === 'showPopupWithData') {
+      const data = request.data;
+      // Process the data as needed and show the popup
+      showPopupWithData(data);
+  } else if (request.action === 'showErrorPopup') {
+      // Handle showing the error popup
+      showErrorPopup();
+  }
+});
+
+function showPopupWithData(data) {
+  chrome.windows.create({
+    url: chrome.runtime.getURL('aipopup.html'),
+    type: 'popup',
+    width: 289,
+    height: 255
+}, function (window) {
+    // Wait for the window to finish loading before sending the message
+    chrome.tabs.onUpdated.addListener(function onUpdated(tabId, changeInfo) {
+        if (tabId === window.tabs[0].id && changeInfo.status === 'complete') {
+            // Send message to the popup window
+            chrome.tabs.sendMessage(tabId, {
+                class: data.a,
+                percentage: data.b,
+            });
+
+            // Remove the listener after sending the message
+            chrome.tabs.onUpdated.removeListener(onUpdated);
+        }
+    });
+});
+}
 

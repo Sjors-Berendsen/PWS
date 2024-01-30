@@ -2,6 +2,7 @@ import torch
 from transformers import BertTokenizer
 from model import ScamDetectorBERT
 
+
 # Check if CUDA (GPU) is available
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using device: {device}')

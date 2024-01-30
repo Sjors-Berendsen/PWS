@@ -1,38 +1,149 @@
-function addButton() {
-  const addCustomButton = () => {
-    const buttonContainer = document.querySelector('.G-tF');
-    console.log(buttonContainer);
+var toolbar = function() {
+  var tb = $("[gh='mtb']");
 
-    // Check if the button container is found
-    if (buttonContainer) {
-      // Check if the button is already present
-      if (!buttonContainer.querySelector('button[data-custom-button="added"]')) {
-        // Create the button element
-        const customButton = document.createElement('button');
-        customButton.textContent = 'scan for scam';
-        customButton.setAttribute('data-custom-button', 'added'); // Add a data attribute to mark the button
-
-        // Add click event listener to the button
-        customButton.addEventListener('click', (event) => {
-          // Check if the clicked element is the custom button
-          if (event.target === customButton) {
-            // Your button click logic here
-            console.log('Button clicked!');
-          }
-        });
-
-        // Append the button to the container
-        buttonContainer.appendChild(customButton);
-      }
-    }
-  };
-
-  // Check if the DOM is ready before adding the button
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addCustomButton);
-  } else {
-    addCustomButton();
+  while($(tb).children().length === 1){
+      tb = $(tb).children().first();
   }
+
+  return tb;
+};
+
+var add_toolbar_button = function(content_html, onClickFunction, styleClass) {
+  var basicLeftStyle = "lS ";
+  var defaultLeftStyle = "T-I-ax7 L3";
+
+  return create_generic_toolbar_button(content_html, onClickFunction, basicLeftStyle, defaultLeftStyle, styleClass, toolbar());
+};
+
+var create_generic_toolbar_button = function(content_html, onClickFunction, basicStyle, defaultStyle, styleClass, selector) {
+  var container = $(document.createElement("div"));
+  container.attr("class","G-Ni J-J5-Ji");
+
+  var button = $(document.createElement("div"));
+  var buttonClasses = "T-I J-J5-Ji gmailjs gmailjs-scan-button ";
+  if(styleClass !== undefined &&
+      styleClass !== null &&
+      styleClass !== ""){
+      buttonClasses += basicStyle+styleClass;
+  }else{
+      buttonClasses += basicStyle+defaultStyle;
+  }
+  button.attr("class", buttonClasses);
+  button.attr("role", 'button')
+
+  button.html(content_html);
+  button.click(onClickFunction);
+
+  var content = $(document.createElement("div"));
+  content.attr("class","asa");
+
+  container.html(button);
+
+  selector.append(container);
+
+  return container;
+};
+
+var email_subject = function () {
+  var e = $(".hP");
+
+  for(var i=0; i<e.length; i++) {
+      if($(e[i]).is(":visible")) {
+          return $(e[i]);
+      }
+  }
+
+  return $();
+};
+
+var email_body = function() {
+  return $(".a3s.aiL");
+};
+
+var checkbutton = function() {
+  var hasScanButton = toolbar().children().find('div.gmailjs-scan-button').length > 0;
+  return hasScanButton
+}
+
+function requestApi(string) {
+  return new Promise((resolve, reject) => {
+      fetch('http://localhost:333/process_string', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ input_string: string })
+      })
+      .then(response => response.json())
+      .then(data => {
+          resolve(data);
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          reject(error);
+      });
+  });
+}
+
+async function processString(string) {
+  try {
+      const response = await requestApi(string);
+      // Assuming the response has properties .a and .b, modify as needed
+      const result = {
+          a: response.a,
+          b: response.b
+      };
+      console.log(response)
+      return result;
+  } catch (error) {
+      console.error('Error processing string:', error);
+      // You might want to handle the error or return a default object here
+      return { a: 'err', b: 'err' };
+  }
+}
+
+
+
+function addButton() {
+
+if(!checkbutton()){
+  add_toolbar_button(
+    'Scan For Scam', 
+    async function(){
+      try{
+        const subject = await email_subject().text().toString();
+        try{
+          var body = await email_body().text();
+        }
+        catch{
+          var body = await email_body().html()
+        }
+        var body = await body.toString()
+        console.log(subject);
+        console.log(body);
+        if ((subject === undefined || subject === null || subject === ""||subject === " ") && (body === undefined || body === null || body === ""|| body === " ")){
+          console.log("this one")
+          await chrome.runtime.sendMessage({ action: 'showErrorPopup' });
+          return
+        }
+        const string = `subject: ${subject} message: ${body}`;
+        var data = await  processString(string);
+        console.log(data);
+        await chrome.runtime.sendMessage({ action: 'showPopupWithData', data: data });
+      }
+      catch(error){
+        console.log(error)
+        console.log("other one")
+        chrome.runtime.sendMessage({ action: 'showErrorPopup' }); 
+      }
+      
+
+  },
+  undefined
+  );
+}
+  
+
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
