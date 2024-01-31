@@ -29,19 +29,6 @@
   "background": {
     "service_worker": "background.js"
   },
-  "browser_action": {
-    "default_icon": "images/icon48.png",
-    "default_popup": "popup.html"
-  },
-  "manifest3": {
-    "rules": [
-      {
-        "host": "*",
-        "path": "/path/to/allow/*"
-      }
-     
-    ]
-  },
   "commands": {
     "openSettings": {
       "suggested_key": {
