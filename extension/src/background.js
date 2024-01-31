@@ -8,19 +8,23 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
    
   
     // Check local blacklist
-    chrome.storage.local.get(['yourBlockedSites'], function (result) {
-      const enabled = chrome.storage.local.get(['enabled']);
-      if (enabled){
-        const localBlacklist = result.yourBlockedSites || [];
-  
-      if (localBlacklist.includes(fullDomain) || localBlacklist.includes(mainDomain)/**add logic for our blacklist too */) {
-          // Redirect to warning page
-          const warningUrl = chrome.runtime.getURL(`warning.html?url=${encodeURIComponent(details.url)}`);
-          chrome.tabs.update(details.tabId, { url: warningUrl });
-      }}});
-  
-  }
-);
+    chrome.storage.local.get(['yourBlockedSites'], function (sites) {
+      chrome.storage.local.get(['enabled'], function(result) {
+        const enabled = result.enabled;
+        console.log(enabled);
+        if (enabled){
+          const localBlacklist = sites.yourBlockedSites || [];
+    
+          if (localBlacklist.includes(fullDomain) || localBlacklist.includes(mainDomain)/**add logic for our blacklist too */) {
+              // Redirect to warning page
+              const warningUrl = chrome.runtime.getURL(`warning.html?url=${encodeURIComponent(details.url)}`);
+              chrome.tabs.update(details.tabId, { url: warningUrl });
+          }
+        }
+        
+      });    
+    });  
+});
   
   // Function to get the main domain (without subdomains)
   function getMainDomain(domain) {
@@ -34,36 +38,44 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
  
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  const url = new URL(details.url);
-  // Check if the URL is on mail.google.com
-  if (url.hostname === 'mail.google.com') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(tabs[0].id, { action: 'addButton' });
-    });
-  }
+    const url = new URL(details.url);
+    // Check if the URL is on mail.google.com
+    if (url.hostname === 'mail.google.com') {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'addButton' });
+      });
+    }
+  
 });
 
 
 chrome.runtime.onInstalled.addListener(function(details) {
   if (details.reason === "install") {
-    // Open the thank you screen on installation
+    chrome.storage.local.set({ 'enabled': true });
+
     chrome.tabs.create({url: chrome.runtime.getURL('thankyou.html')});
+  }
+  else if (details.reason === "update"){
+
   }
 });
 
 chrome.downloads.onChanged.addListener(function (item) {
-  console.log(item)
-  for (var i = 0; i < harmfulFileTypes.length; i++) {
-      var filetype = harmfulFileTypes[i];
+  chrome.storage.local.get(['enabled'], function(result) {
+    const enabled = result.enabled;
+    if (enabled){
+      for (var i = 0; i < harmfulFileTypes.length; i++) {
+          var filetype = harmfulFileTypes[i];
 
-      // Check if the file extension is in the list or if it has an LRM in the name
-      if (item.filename.current.endsWith(filetype) || item.filename.current.includes('\u200E')) {
-          // Pause download and show download popup
-          showDownloadPopup(item);
-          chrome.downloads.pause(item.id);
-          break;
+          // Check if the file extension is in the list or if it has an LRM in the name
+          if (item.filename.current.endsWith(filetype) || item.filename.current.includes('\u200E')) {
+              // Pause download and show download popup
+              showDownloadPopup(item);
+              chrome.downloads.pause(item.id);
+              break;
+          }
       }
-  }
+    }});
 });
 
 function showDownloadPopup(item) {
