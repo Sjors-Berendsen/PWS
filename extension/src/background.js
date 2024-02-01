@@ -1,21 +1,19 @@
-var harmfulFileTypes = ['.exe', '.bat', '.cmd', '.js', '.vbs', '.ps1', '.jar', '.msi', '.dll', '.scr'];
-
 chrome.webNavigation.onBeforeNavigate.addListener((details) => {
     const url = new URL(details.url);
     const fullDomain = url.hostname;
     const mainDomain = getMainDomain(fullDomain);
-  
+    updateblacklist()
    
   
     // Check local blacklist
+    chrome.storage.local.get(['standardBlockedSites'], function (sitess){
     chrome.storage.local.get(['yourBlockedSites'], function (sites) {
       chrome.storage.local.get(['enabled'], function(result) {
         const enabled = result.enabled;
-        console.log(enabled);
         if (enabled){
           const localBlacklist = sites.yourBlockedSites || [];
-    
-          if (localBlacklist.includes(fullDomain) || localBlacklist.includes(mainDomain)/**add logic for our blacklist too */) {
+          const publicBlacklist = sitess.standardBlockedSites || [];
+          if (localBlacklist.includes(fullDomain) || localBlacklist.includes(mainDomain)||publicBlacklist.includes(fullDomain) || publicBlacklist.includes(mainDomain)) {
               // Redirect to warning page
               const warningUrl = chrome.runtime.getURL(`warning.html?url=${encodeURIComponent(details.url)}`);
               chrome.tabs.update(details.tabId, { url: warningUrl });
@@ -24,8 +22,34 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => {
         
       });    
     });  
+    });
 });
   
+async function updateblacklist() {
+  const publicblacklist = await requestApi();
+  chrome.storage.local.set({'standardBlockedSites':publicblacklist.sites})
+}
+
+async function requestApi() {
+  return await fetch('http://localhost:333/get_sitelist', {
+      method: 'get',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+  })
+  .catch(error => {
+      console.error('Error:', error);
+      throw error; // Re-throw the error to maintain consistent error handling
+  });
+}
+
+
   // Function to get the main domain (without subdomains)
   function getMainDomain(domain) {
     const parts = domain.split('.');
@@ -52,17 +76,21 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
 chrome.runtime.onInstalled.addListener(function(details) {
   if (details.reason === "install") {
     chrome.storage.local.set({ 'enabled': true });
-
+    var harmfulFileTypes = ['.exe', '.bat', '.cmd', '.js', '.vbs', '.ps1', '.jar', '.msi', '.dll', '.scr'];
+    chrome.storage.local.set({'extensiontypes': harmfulFileTypes})
     chrome.tabs.create({url: chrome.runtime.getURL('thankyou.html')});
   }
   else if (details.reason === "update"){
-
+    //var harmfulFileTypes = ['.exe', '.bat', '.cmd', '.js', '.vbs', '.ps1', '.jar', '.msi', '.dll', '.scr'];
+    //chrome.storage.local.set({'extensiontypes': harmfulFileTypes})
   }
 });
 
 chrome.downloads.onChanged.addListener(function (item) {
   chrome.storage.local.get(['enabled'], function(result) {
+    chrome.storage.local.get(['extensiontypes'], function(results) {
     const enabled = result.enabled;
+    const harmfulFileTypes = results.extensiontypes;
     if (enabled){
       for (var i = 0; i < harmfulFileTypes.length; i++) {
           var filetype = harmfulFileTypes[i];
@@ -76,6 +104,7 @@ chrome.downloads.onChanged.addListener(function (item) {
           }
       }
     }});
+    });
 });
 
 function showDownloadPopup(item) {

@@ -17,5 +17,17 @@ def process_string():
     result = {'a': a, 'b': b}
     return jsonify(result)
 
+@app.route('/get_sitelist', methods=['GET'])
+def get_sitelist():
+    file_path = 'domains.txt'  # Replace 'your_file.txt' with the actual path to your text file
+
+    # Open the file and read lines
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Remove newline characters and create an array of strings
+    sitelist = [line.strip() for line in lines]
+    return jsonify({'sites': sitelist})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=333)

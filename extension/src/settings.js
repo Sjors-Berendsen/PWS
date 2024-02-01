@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to load blocked sites based on the tab
     function loadBlockedSites(tab) {
       const sitesKey = tab === 'your-sites' ? 'yourBlockedSites' : 'standardBlockedSites';
-  
       chrome.storage.local.get([sitesKey], function (result) {
         const blockedSites = result[sitesKey] || [];
   
@@ -105,5 +104,88 @@ document.addEventListener('DOMContentLoaded', function () {
     function getSelectedSite() {
       const selectedElement = blockedSitesList.querySelector('.selected');
       return selectedElement ? selectedElement.textContent : null;
+    }
+
+
+    const blockedExtensionsList = document.getElementById('blocked-extensions-list');
+    const newExtensionInput = document.getElementById('new-extension-input');
+    const addExtensionButton = document.getElementById('add-extension-button');
+    const removeExtensionButton = document.getElementById('remove-extension-button');
+    newExtensionInput.value = '';
+    loadBlockedExtensions();
+
+    addExtensionButton.addEventListener('click', function () {
+        const newExtension = newExtensionInput.value.trim();
+        if (newExtension) {
+            addBlockedExtension(newExtension);
+        }
+    });
+
+    removeExtensionButton.addEventListener('click', function () {
+        const selectedExtension = getSelectedExtension();
+        if (selectedExtension) {
+            removeBlockedExtension(selectedExtension);
+        }
+    });
+
+    function loadBlockedExtensions() {
+        chrome.storage.local.get(['extensiontypes'], function (result) {
+            const blockedExtensions = result.extensiontypes || [];
+
+            blockedExtensionsList.innerHTML = ''; // Clear the previous content
+
+            if (blockedExtensions.length > 0) {
+                blockedExtensions.forEach(extension => {
+                    const listItem = createBlockedExtensionItem(extension);
+                    blockedExtensionsList.appendChild(listItem);
+                });
+            } else {
+                blockedExtensionsList.textContent = 'No blocked file extensions.';
+            }
+        });
+    }
+
+    function addBlockedExtension(extension) {
+        chrome.storage.local.get(['extensiontypes'], function (result) {
+            const blockedExtensions = result.extensiontypes || [];
+            blockedExtensions.push(extension);
+
+            chrome.storage.local.set({ 'extensiontypes': blockedExtensions }, function () {
+                loadBlockedExtensions();
+                newExtensionInput.value = ''; // Clear the input field
+            });
+        });
+    }
+
+    function removeBlockedExtension(extension) {
+        chrome.storage.local.get(['extensiontypes'], function (result) {
+            const blockedExtensions = result.extensiontypes || [];
+            const updatedExtensions = blockedExtensions.filter(e => e !== extension);
+
+            chrome.storage.local.set({ 'extensiontypes': updatedExtensions }, function () {
+                loadBlockedExtensions(); // Reload the list after removing an extension
+                newExtensionInput.value = ''; // Clear the input field
+            });
+        });
+    }
+
+    function createBlockedExtensionItem(extension) {
+        const listItem = document.createElement('div');
+        listItem.textContent = extension;
+
+        listItem.addEventListener('click', function () {
+            const allItems = blockedExtensionsList.querySelectorAll('div');
+            allItems.forEach(item => item.classList.remove('selected'));
+
+            listItem.classList.add('selected');
+            newExtensionInput.value = extension;
+        });
+
+        return listItem;
+    }
+
+    function getSelectedExtension() {
+        const selectedElement = blockedExtensionsList.querySelector('.selected');
+        return selectedElement ? selectedElement.textContent : null;
     }
   });

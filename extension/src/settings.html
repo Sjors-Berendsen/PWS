@@ -11,7 +11,6 @@
     <a href="#general">General</a>
     <a href="#blocked-sites">Blocked Sites</a>
     <a href="#Download-settings">Download Settings</a>
-    <a href="#reports">Reports</a>
   </div>
 
   <div class="main">
@@ -19,7 +18,7 @@
 
     <section id="general">
       <h4>General Settings</h4>
-      
+      <p>No general settings needed rn</p>
     </section>
 
     <section id="blocked-sites">
@@ -38,15 +37,22 @@
       </div>
     </section>
 
-    <section id="Download-settings">
-      <h4>Downloads settings</h4>
-      <!-- Add your blacklisted users content here -->
-    </section>
+    <!-- Add this section to your HTML -->
+  <section id="Download-settings">
+    <h4>Downloads settings</h4>
+    <div id="blocked-extensions-content">
+      <h5>Blocked File Extensions</h5>
+      <div id="blocked-extensions-list"></div>
+      <div>
+        <input type="text" id="new-extension-input" placeholder="Enter file extension">
+        <button id="add-extension-button">+</button>
+        <button id="remove-extension-button">-</button>
+      </div>
+    </div>
+  </section>
 
-    <section id="reports">
-      <h4>Reports</h4>
-      <!-- Add your reports content here -->
-    </section>
+
+    
   </div>
 
   <script src="settings.js"></script>

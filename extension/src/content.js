@@ -93,7 +93,6 @@ async function processString(string) {
           a: response.a,
           b: response.b
       };
-      console.log(response)
       return result;
   } catch (error) {
       console.error('Error processing string:', error);
@@ -119,21 +118,16 @@ if(!checkbutton()){
           var body = await email_body().html()
         }
         var body = await body.toString()
-        console.log(subject);
-        console.log(body);
         if ((subject === undefined || subject === null || subject === ""||subject === " ") && (body === undefined || body === null || body === ""|| body === " ")){
-          console.log("this one")
           await chrome.runtime.sendMessage({ action: 'showErrorPopup' });
           return
         }
         const string = `subject: ${subject} message: ${body}`;
         var data = await  processString(string);
-        console.log(data);
         await chrome.runtime.sendMessage({ action: 'showPopupWithData', data: data });
       }
       catch(error){
         console.log(error)
-        console.log("other one")
         chrome.runtime.sendMessage({ action: 'showErrorPopup' }); 
       }
       
